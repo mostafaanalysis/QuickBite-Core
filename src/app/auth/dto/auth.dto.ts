@@ -1,4 +1,4 @@
-import { IsEmail,IsString, IsStrongPassword, MaxLength, MinLength,IsEnum } from "class-validator";
+import { IsEmail,IsString, IsStrongPassword, MaxLength, MinLength,IsEnum, isString, IsNotEmpty } from "class-validator";
 import { system_role_ent } from "../../user/enums";
 export class register_DTO{
     @IsEmail()
@@ -25,5 +25,16 @@ export class register_DTO{
 
     @IsEnum(system_role_ent)
     role! : system_role_ent;
+
+}
+
+export class loginDTO{
+    @IsEmail()
+    email! :string ;
+
+    @IsString()
+    @IsNotEmpty()
+    password!:string;
+
 
 }

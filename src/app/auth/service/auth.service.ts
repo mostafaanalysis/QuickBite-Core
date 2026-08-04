@@ -1,13 +1,12 @@
 import { system_role_ent } from "../../user/enums";
-import { findUserExitsByEmailOrPhone } from "../../user/repository/user.repo";
-import { register_DTO } from "../dto/auth.dto";
+import { findUserByEmail, findUserExitsByEmailOrPhone } from "../../user/repository/user.repo";
+import { loginDTO, register_DTO } from "../dto/auth.dto";
 import { UserAlreadyExistsError } from "../error";
-import { create_AccessToken, create_FreshToken, hashPassword } from "../utils";
+import { comparPassword, create_AccessToken, create_FreshToken, hashPassword } from "../utils";
 import { cannotSignUpAsAdmin } from "../error";
 import { User } from "../../user/entity/user.entity";
 import { createUser } from "../../user/repository/user.repo";
-
-
+import { InccorectCredentials } from "../error";
 
 export class authService {
     register = async (data : register_DTO)=>{
@@ -38,6 +37,7 @@ export class authService {
     const refreshToken = create_FreshToken(payload);
 
     return {
+        message : "successfully registerd user",
         accessToken,
         refreshToken,
         user :{
@@ -48,5 +48,32 @@ export class authService {
     }
     
 }
+login = async (data : loginDTO)=> {
+    const user = await findUserByEmail(data.email);
+    if(!user){
+        throw InccorectCredentials;
+    }
+    const match  = await comparPassword(data.password,user.password_hash);
+    if(! match){
+        throw InccorectCredentials;
+    }
+    const payload = {userId : user.id ,role :user.system_role,email:user.email};
+
+    const accessToken = create_AccessToken(payload);
+
+    const refreshToken = create_FreshToken(payload);
+    return {
+        message : "login successfully",
+        accessToken,
+        refreshToken,
+        user :{
+            id : user.id,
+            email: user.email,
+            phone:user.phone,
+        }
+    }
+    
+}
+
 }   
 export const authservice = new authService();

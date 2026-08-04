@@ -28,3 +28,7 @@ export function create_FreshToken(payload: JwtPayload): string {
 
     return jwt.sign(payload, env.jwt.refreshSecret, options);
 }
+
+export function comparPassword(inputPassword : string , hashedPassword : string){
+    return bcrypt.compare(inputPassword,hashedPassword)
+}
