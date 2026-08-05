@@ -5,3 +5,4 @@ UserAlreadyExistsError= new AppError("user already exists with same phone or ema
 export const  cannotSignUpAsAdmin = new AppError("you cannot register as admin",400)
 
 export const InccorectCredentials = new AppError("Incorrect email or password",401)
+export const InccorectOtp = new AppError("Invaild OTP",401)

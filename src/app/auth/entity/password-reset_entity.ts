@@ -1,32 +1,25 @@
 
-
 export class PasswordResest{
     id : number; 
     userId: number;
     otpHash:string;
     expires_At:Date;
-    consumed_At:Date;
+    consumed_At:Date | null;
     created_At:Date;
 
-    constructor( id :number, 
-    userId: number,
-    otpHash:string,
-    expires_At:Date,
-    consumed_At:Date,
-    created_At:Date){
+    constructor(data : Partial <PasswordResest>){
 
-    this.id = id;
-    this.userId= userId;
+    this.id = data.id!;
 
-    this.otpHash=otpHash;
+    this.userId= data.userId!;
 
-    this.expires_At=expires_At;
+    this.otpHash=data.otpHash!;
 
-    this.consumed_At=consumed_At;
+    this.expires_At=data.expires_At!;
 
-    this.created_At=created_At;
-
-
+    this.consumed_At=data.consumed_At!;
+    
+    this.created_At= data.created_At!;
     }
     isExpired():boolean{
         return this.expires_At < new Date();

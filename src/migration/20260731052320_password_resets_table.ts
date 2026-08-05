@@ -15,7 +15,9 @@ export async function up(knex: Knex): Promise<void> {
         FOREIGN KEY (user_id)
         REFERENCES users(id)
         );
+    CREATE INDEX idx_password_resets_user_id ON password_resets(user_id);
 
+        ALTER TABLE password_resets ALTER COLUMN consumed_at DROP NOT NULL;
         `)
 }
 

@@ -1,5 +1,5 @@
 import { validateBody } from "../../../common/validation/validate";
-import { loginDTO, register_DTO } from "../dto/auth.dto";
+import { forgetPasswordDTO, loginDTO, register_DTO, resetPasswordDTO } from "../dto/auth.dto";
 import { authservice, authService } from "../service/auth.service";
 import { NextFunction,Request,Response } from "express";
 
@@ -25,6 +25,32 @@ export class AuthController{
         catch(err){
             next(err);
         }
+    }
+    forgetpassword = async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+    const data= await validateBody(forgetPasswordDTO,req.body);
+    await this.authservice.forgetPassword(data);
+    res.status(200).json({
+        "message" : "email sent with OTP"
+    })
+    }
+    catch(err){
+    next(err);
+    }
+    }
+
+
+    resetpassword = async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+    const data= await validateBody(resetPasswordDTO,req.body);
+    await this.authservice.resetPassword(data);
+    res.status(200).json({
+        "message" : "Password resets succesfully , please login again"
+    })
+    }
+    catch(err){
+    next(err);
+    }
     }
 }
 
