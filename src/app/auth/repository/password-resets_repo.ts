@@ -21,10 +21,8 @@ return new PasswordResest({
 });
 }
 
-export async function CreatePasswordReset(
-passwordResest: Partial<PasswordResest>
-) {
-const [row] = await db("password_resets")
+export async function CreatePasswordReset(passwordResest: Partial<PasswordResest>) {
+const row = await db("password_resets")
     .insert({
 user_id: passwordResest.userId,
 otp_hash: passwordResest.otpHash,
@@ -40,7 +38,7 @@ export async function findLatestPsswordResetByUserId(
     userId: number
 ): Promise<PasswordResest | undefined> {
 
-    const row = await db("password_resets")
+    const [row] = await db("password_resets")
         .select(passwordResetsColumn)
         .where("user_id", userId)
         .whereNull("consumed_at")

@@ -41,3 +41,11 @@ export async function hashOTP(otp : string){
     
     return crypto.createHash("sha256").update(otp).digest("hex");
 }
+
+export function verfiyAccessToken(token : string) : JwtPayload {
+    return jwt.verify(token,env.jwt.accessSecret) as JwtPayload ;
+}
+
+export function verfiyRefreshToken(token : string) : JwtPayload {
+    return jwt.verify(token,env.jwt.refreshSecret) as JwtPayload ;
+}
