@@ -11,3 +11,4 @@ authRouter.post('/forget-password',authcontroller.forgetpassword);
 
 authRouter.post('/reset-password',authcontroller.resetpassword);
 
+authRouter.post('/refresh', authcontroller.refresh);

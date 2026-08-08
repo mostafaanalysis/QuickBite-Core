@@ -2,6 +2,8 @@ import { validateBody } from "../../../common/validation/validate";
 import { forgetPasswordDTO, loginDTO, register_DTO, resetPasswordDTO } from "../dto/auth.dto";
 import { authservice, authService } from "../service/auth.service";
 import { NextFunction,Request,Response } from "express";
+import { optionsAccess,optionsRefresh } from "../../../common/auth/cookie-option";
+import { youAreUnthoraized } from "../error";
 
 export class AuthController{
     constructor(private readonly authservice : authService){
@@ -20,17 +22,8 @@ export class AuthController{
         try{
             const data = await validateBody(loginDTO,req.body);
             const reslut = await this.authservice.login(data);
-            res.cookie("access_token", reslut.accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60*60*1000
-})
-res.cookie("refresh_token", reslut.refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    path : '/api/auth/refresh'
-    });
+            res.cookie("access_token", reslut.accessToken, optionsAccess)
+res.cookie("refresh_token", reslut.refreshToken, optionsRefresh);
             res.status(200).json(reslut);
         }
         catch(err){
@@ -64,6 +57,32 @@ res.cookie("refresh_token", reslut.refreshToken, {
     next(err);
     }
     }
+    refresh = async (req:Request,res:Response ,next:NextFunction)=>{
+        try {
+            if(!req.cookies.refresh_token){
+            throw youAreUnthoraized
+        }
+        const result = await this.authservice.refresh(req.cookies.refresh_token)
+        res.cookie("access_token",result.accessToken,optionsAccess)
+        res.status(200).json({"message": "success"})
+        }
+        catch(err){
+            next(err)
+        }
+    }
+    // refresh = async(req: Request, res: Response, next: NextFunction) => {
+    //     try {
+    //         const result = await this.authService.refresh(req.cookies.refresh_token);
+    //         res.cookie("access_token", result.accessToken, {
+    //             httpOnly: true,
+    //             secure: env.isProduction,
+    //             maxAge: toMs(1, 'h'),
+    //         });
+    //         res.status(200).json({message: "success"});
+    //     } catch(err) {
+    //         next(err);
+    //     }
+    // }
 }
 
 export const authcontroller= new AuthController(authservice);

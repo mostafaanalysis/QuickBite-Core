@@ -2,7 +2,7 @@ import { system_role_ent } from "../../user/enums";
 import { findUserByEmail, findUserExitsByEmailOrPhone, updatePassword } from "../../user/repository/user.repo";
 import { forgetPasswordDTO, loginDTO, register_DTO, resetPasswordDTO } from "../dto/auth.dto";
 import { UserAlreadyExistsError } from "../error";
-import { comparPassword, create_AccessToken, create_FreshToken, hashOTP,hashPassword } from "../utils";
+import { comparPassword, create_AccessToken, create_FreshToken, hashOTP,hashPassword, verfiyRefreshToken } from "../utils";
 import { cannotSignUpAsAdmin } from "../error";
 import { User } from "../../user/entity/user.entity";
 import { createUser } from "../../user/repository/user.repo";
@@ -10,7 +10,7 @@ import { InccorectCredentials } from "../error";
 import { generateOTP } from "../utils";
 import { CreatePasswordReset, findLatestPsswordResetByUserId, updatePasswordResetConsumedAt } from "../repository/password-resets_repo";
 import { InccorectOtp } from "../error";
-
+import { youAreUnthoraized } from "../error";
 
 export class authService {
     register = async (data : register_DTO)=>{
@@ -114,7 +114,27 @@ resetPassword = async (data:resetPasswordDTO)=>{
     await updatePasswordResetConsumedAt(reset.id)
 }
 
-}   
+refresh = async (refresh_token:string)=>{
+    
+    if(!refresh_token){
+        throw InccorectCredentials;
+    }
+
+    const payload = verfiyRefreshToken(refresh_token);
+    const accessToken = create_AccessToken({userId: payload.userId, role: payload.role, email: payload.email})
+    return {accessToken};
+
+}
+// refresh = async(refreshToken: string) => {
+//         if (!refreshToken) {
+//             throw IncorrectCredentials;
+//         }
+//         const payload = verifyRefreshToken(refreshToken);
+//         const accessToken = createAccessToken({userId: payload.userId, role: payload.role, email: payload.email});
+//         return {accessToken};
+//     }
+}
+
 export const authservice = new authService();
 
 

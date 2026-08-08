@@ -6,3 +6,5 @@ export const  cannotSignUpAsAdmin = new AppError("you cannot register as admin",
 
 export const InccorectCredentials = new AppError("Incorrect email or password",401)
 export const InccorectOtp = new AppError("Invaild OTP",401)
+
+export const youAreUnthoraized= new AppError("invalid session",401)
