@@ -35,3 +35,11 @@ export class User {
         this.updated_at = user.updated_at ?? new Date();
     }
 }
+
+export type UserResponse = {
+    id: number;
+    email: string;
+    phone: string;
+    name: string;
+    system_role: system_role_ent;
+};

@@ -6,3 +6,5 @@ export const userRouter = Router();
 
 userRouter.get('/me',authenticate,userController.getMe);
 
+userRouter.patch('/edit-me',authenticate,userController.editMe);
+

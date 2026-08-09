@@ -70,19 +70,6 @@ res.cookie("refresh_token", reslut.refreshToken, optionsRefresh);
             next(err)
         }
     }
-    // refresh = async(req: Request, res: Response, next: NextFunction) => {
-    //     try {
-    //         const result = await this.authService.refresh(req.cookies.refresh_token);
-    //         res.cookie("access_token", result.accessToken, {
-    //             httpOnly: true,
-    //             secure: env.isProduction,
-    //             maxAge: toMs(1, 'h'),
-    //         });
-    //         res.status(200).json({message: "success"});
-    //     } catch(err) {
-    //         next(err);
-    //     }
-    // }
 }
 
 export const authcontroller= new AuthController(authservice);

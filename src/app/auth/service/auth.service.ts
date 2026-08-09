@@ -10,7 +10,7 @@ import { InccorectCredentials } from "../error";
 import { generateOTP } from "../utils";
 import { CreatePasswordReset, findLatestPsswordResetByUserId, updatePasswordResetConsumedAt } from "../repository/password-resets_repo";
 import { InccorectOtp } from "../error";
-import { youAreUnthoraized } from "../error";
+
 
 export class authService {
     register = async (data : register_DTO)=>{
@@ -125,14 +125,6 @@ refresh = async (refresh_token:string)=>{
     return {accessToken};
 
 }
-// refresh = async(refreshToken: string) => {
-//         if (!refreshToken) {
-//             throw IncorrectCredentials;
-//         }
-//         const payload = verifyRefreshToken(refreshToken);
-//         const accessToken = createAccessToken({userId: payload.userId, role: payload.role, email: payload.email});
-//         return {accessToken};
-//     }
 }
 
 export const authservice = new authService();

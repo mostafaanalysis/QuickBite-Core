@@ -1,7 +1,7 @@
 
 import { db } from "../../../common/knex/knex";
 import { User } from "../entity/user.entity";
-
+import { UserResponse } from "../entity/user.entity";
 
 const USER_COLUMNS = [
     "id",
@@ -14,6 +14,16 @@ const USER_COLUMNS = [
     "updated_at",
     "deleted_at",
 ];
+function toEditEntity(row: Partial<User>): UserResponse {
+    return {
+        id: row.id!,
+        email: row.email!,
+        phone: row.phone!,
+        name: row.name!,
+        system_role: row.system_role!
+    };
+}
+
 
 function toEntity(row: any): User {
     return new User({
@@ -29,6 +39,7 @@ function toEntity(row: any): User {
     });
 }
 
+
 export async function findUserByEmail(email: string): Promise<User | undefined> {
 
     const row = await db("users")
@@ -37,7 +48,7 @@ export async function findUserByEmail(email: string): Promise<User | undefined> 
         .whereNull("deleted_at")
         .first();
 
-    return row ? toEntity(row) : undefined;
+    return row ? (row) : undefined;
 }
 
 
@@ -47,6 +58,20 @@ export async function findUserExitsByEmailOrPhone(email: string,phone : string):
         `SELECT EXISTS (SELECT 1 FROM users WHERE email= ? OR phone = ?)AS "exists" `,
         [email,phone]);
         return result.rows[0].exists;
+}
+
+export async function findUserExitsPhone(phone: string): Promise<boolean> {
+
+    const result = await db.raw(
+        `SELECT EXISTS (
+            SELECT 1
+            FROM users
+            WHERE phone = ?
+        ) AS "exists"`,
+        [phone]
+    );
+
+    return result.rows[0].exists;
 }
 
 export async function findUserExitsByEmail(email: string): Promise<boolean> {
@@ -86,4 +111,23 @@ export async function findUserById(id: number): Promise<User | undefined> {
         .first();
 
     return row ? toEntity(row) : undefined;
+}
+
+export async function editUserNameAndPhone(
+    id: number,
+    name: string,
+    phone: string
+) {
+    await db("users")
+        .where("id", id)
+        .update({
+            name: name,
+            phone: phone
+        });
+
+    const row = await db("users")
+        .where("id", id)
+        .first();
+
+    return row ? toEditEntity(row) : undefined;
 }
