@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authcontroller } from "./controller/auth.controller";
+import { authenticate } from "../../common/auth/guard";
 
 export const authRouter : Router = Router();
 
@@ -11,4 +12,4 @@ authRouter.post('/forget-password',authcontroller.forgetpassword);
 
 authRouter.post('/reset-password',authcontroller.resetpassword);
 
-authRouter.post('/refresh', authcontroller.refresh);
+authRouter.post('/refresh',authcontroller.refresh);

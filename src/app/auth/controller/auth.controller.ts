@@ -13,6 +13,8 @@ export class AuthController{
         try{
     const data = await validateBody(register_DTO,req.body);
     const reslut = await this.authservice.register(data);
+    res.cookie("access_token", reslut.accessToken, optionsAccess)
+res.cookie("refresh_token", reslut.refreshToken, optionsRefresh);
     res.status(201).json(reslut);
         } catch(err){
             next (err);

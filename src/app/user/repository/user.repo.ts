@@ -113,11 +113,7 @@ export async function findUserById(id: number): Promise<User | undefined> {
     return row ? toEntity(row) : undefined;
 }
 
-export async function editUserNameAndPhone(
-    id: number,
-    name: string,
-    phone: string
-) {
+export async function editUserNameAndPhone(id: number,name: string,phone: string) {
     await db("users")
         .where("id", id)
         .update({
