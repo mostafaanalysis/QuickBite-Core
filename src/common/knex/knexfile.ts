@@ -1,5 +1,9 @@
 import { env } from "../config/env.js";
 import type { Knex } from "knex";
+import path from "path";
+
+const projectRoot = path.resolve(__dirname, "../../../");
+
 const config: Knex.Config = {
   client: "pg",
   connection: {
@@ -13,8 +17,9 @@ const config: Knex.Config = {
     max: env.db.poolMax,
   },
   migrations: {
-    directory: env.db.migrationDirectory,
+    directory: path.resolve(projectRoot, env.db.migrationDirectory),
     extension: env.db.migrationExtension,
   },
 };
 export default config;
+console.log("MIGRATIONS DIR:", path.resolve(projectRoot, env.db.migrationDirectory));

@@ -1,7 +1,7 @@
 import { system_role_ent } from "../../user/enums";
 import { findUserByEmail, findUserExitsByEmailOrPhone, updatePassword } from "../../user/repository/user.repo";
 import { forgetPasswordDTO, loginDTO, register_DTO, resetPasswordDTO } from "../dto/auth.dto";
-import { UserAlreadyExistsError } from "../error";
+import { RestaurantDataRequiredError, UserAlreadyExistsError } from "../error";
 import { comparPassword, create_AccessToken, create_FreshToken, hashOTP,hashPassword, verfiyRefreshToken } from "../utils";
 import { cannotSignUpAsAdmin } from "../error";
 import { User } from "../../user/entity/user.entity";
@@ -10,9 +10,12 @@ import { InccorectCredentials } from "../error";
 import { generateOTP } from "../utils";
 import { CreatePasswordReset, findLatestPsswordResetByUserId, updatePasswordResetConsumedAt } from "../repository/password-resets_repo";
 import { InccorectOtp } from "../error";
+import { restaurantsService,RestaurantsService } from "../../restaurants/service/rest.service";
+import { db } from "../../../common/knex/knex";
 
 
-export class authService {
+export class AuthService {
+    constructor(private readonly restaurantsService : RestaurantsService) {}
     register = async (data : register_DTO)=>{
         if(data.role == system_role_ent.SYSTEM_ADMIN){
             throw  cannotSignUpAsAdmin
@@ -25,7 +28,11 @@ export class authService {
     }
     const hashPasswordh  = await hashPassword(data.password);
     const now = new Date();
-    const  user : User = await createUser({
+    const trx = await db.transaction();
+    let user;
+    let restaurant;
+    try{
+    user  = await createUser({
         email : data.email,
         phone : data.phone,
         name : data.name,
@@ -33,9 +40,20 @@ export class authService {
         system_role : data.role,
         created_at : now,
         updated_at : now,
-    })
+    },trx)
+    if(data.role == system_role_ent.RESTAURANT_USER){
+    if(data.restaurants == undefined){
+        throw RestaurantDataRequiredError;
+    }
+    restaurant = await this.restaurantsService.createRestaurants(user.id,data.restaurants,trx)
+    }
+    await trx.commit();
+}
+catch(err){
+    await trx.rollback();
+    throw err;
+}
     const payload = {userId : user.id ,role :data.role,email:user.email};
-
     const accessToken = create_AccessToken(payload);
 
     const refreshToken = create_FreshToken(payload);
@@ -48,7 +66,8 @@ export class authService {
             id : user.id,
             email: user.email,
             phone:user.phone,
-        }
+        },
+        restaurant
     }
     
 }
@@ -127,6 +146,6 @@ refresh = async (refresh_token:string)=>{
 }
 }
 
-export const authservice = new authService();
+export const authservice = new AuthService(restaurantsService);
 
 

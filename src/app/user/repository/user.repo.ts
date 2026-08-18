@@ -1,4 +1,5 @@
 
+import { Knex } from "knex";
 import { db } from "../../../common/knex/knex";
 import { User } from "../entity/user.entity";
 import { UserResponse } from "../entity/user.entity";
@@ -82,8 +83,8 @@ export async function findUserExitsByEmail(email: string): Promise<boolean> {
         return result.rows[0].exists;
 }
 
-export async function createUser(user:Partial<User>): Promise <User> {
-    const [row]=await db("users").insert({
+export async function createUser(user:Partial<User>, conn :Knex = db): Promise <User> {
+    const [row]=await conn("users").insert({
         email:user.email,
         phone : user.phone,
         name:user.name,

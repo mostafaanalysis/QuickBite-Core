@@ -1,12 +1,12 @@
 import { validateBody } from "../../../common/validation/validate";
 import { forgetPasswordDTO, loginDTO, register_DTO, resetPasswordDTO } from "../dto/auth.dto";
-import { authservice, authService } from "../service/auth.service";
+import { authservice, AuthService } from "../service/auth.service";
 import { NextFunction,Request,Response } from "express";
 import { optionsAccess,optionsRefresh } from "../../../common/auth/cookie-option";
 import { youAreUnthoraized } from "../error";
 
 export class AuthController{
-    constructor(private readonly authservice : authService){
+    constructor(private readonly authservice : AuthService){
 
     }
     register = async (req : Request, res: Response , next : NextFunction)=>{

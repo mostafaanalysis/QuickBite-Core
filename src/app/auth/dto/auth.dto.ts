@@ -1,5 +1,6 @@
-import { IsEmail,IsString, IsStrongPassword, MaxLength, MinLength,IsEnum, isString, IsNotEmpty, Length } from "class-validator";
+import { IsEmail,IsString, IsStrongPassword, MaxLength, MinLength,IsEnum, isString, IsNotEmpty, Length, minLength, IsOptional, ValidateNested } from "class-validator";
 import { system_role_ent } from "../../user/enums";
+import { Type } from "class-transformer";
 
 export class register_DTO{
     @IsEmail()
@@ -26,6 +27,11 @@ export class register_DTO{
 
     @IsEnum(system_role_ent)
     role! : system_role_ent;
+
+    @IsOptional()
+    @ValidateNested()
+    @Type(()=>RegisterRestaurantDTO)
+    restaurants? : RegisterRestaurantDTO;
 
 }
 
@@ -65,4 +71,19 @@ export class resetPasswordDTO{
 })
     newPassword!:string;
 
+}
+
+export class RegisterRestaurantDTO{
+
+@IsString()
+@MinLength(1)
+name!:string;
+
+@IsOptional()
+@IsString()
+logoURL? : string;
+
+@IsString()
+@MinLength(1)
+primaryCountry !: string;
 }

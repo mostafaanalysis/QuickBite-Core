@@ -8,3 +8,5 @@ export const InccorectCredentials = new AppError("Incorrect email or password",4
 export const InccorectOtp = new AppError("Invaild OTP",401)
 
 export const youAreUnthoraized= new AppError("invalid session",401)
+
+export const RestaurantDataRequiredError = new AppError("restaurants data is required",400)
