@@ -1,6 +1,7 @@
 import {Knex} from "knex";
 import {db} from "../../../common/knex/knex";
 import { Branch } from "../entity/branch.entity";
+import { UpdateBranchDTO } from "../dto/branch.dto";
 
 const BRANCH_COLUMNS = ['id','restaurant_id','country_code','address_text','label','lat','lng',
     'is_active','opens_at','closes_at','accept_orders','created_at','updated_at',
@@ -29,7 +30,7 @@ function toEntity(row: any) {
 }
 
 export async function createBranch (data: Partial <Branch>, conn: Knex = db): Promise<Branch> {
-    const [row] = await conn("restaurant_branches").insert({
+    const [row] = await conn("restaurants_branches").insert({
         restaurant_id: data.restaurantId,
         country_code: data.countryCode,
         address_text: data.addressText,
@@ -64,10 +65,49 @@ export async function findNearbyBranches(lat: number, lng: number): Promise<Bran
     b.currency,
     r.name,
     r.logo_url
-    FROM restaurant_branches b JOIN restaurants r ON  b.restaurant_id = r.id
+    FROM restaurants_branches b JOIN restaurants r ON  b.restaurant_id = r.id
     WHERE b.is_active = true AND r.status ='active'
     AND ST_DWithin(b.location, ST_MakePoint(?, ?)::geography, b.delivery_radius*1000)
     `,[lng, lat]);
 
     return result.rows;
+}
+
+
+export async function branchesOfRestaurant(restaurantId:number){
+    const row = await db("restaurants_branches").where("restaurant_id",restaurantId)
+
+    return row.map(toEntity);
+}
+
+
+export async function getBranchById(id: number) {
+    const row = await db("restaurants_branches")
+        .select(BRANCH_COLUMNS)
+        .where("id", id)
+        .first();
+    if (!row) return undefined;
+    return toEntity(row);
+}
+
+
+export async function updateBranch(branchId:number,data:UpdateBranchDTO){
+
+const [row] = await db("restaurants_branches")
+        .where("id", branchId)
+        .update({
+            label: data.label,
+            address_text: data.addressText,
+            lat: data.lat,
+            lng: data.lng,
+            opens_at: data.opensAt,
+            closes_at: data.closesAt,
+            delivery_radius: data.deliveryRadius,
+            currency: data.currency,
+            accept_orders: data.acceptOrders,
+            updated_at: new Date(),
+        })
+        .returning("*");
+
+    return row ? toEntity(row) : undefined;
 }

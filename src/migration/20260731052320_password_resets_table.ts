@@ -1,6 +1,5 @@
 import type { Knex } from "knex";
 
-
 export async function up(knex: Knex): Promise<void> {
     await knex.raw(`
         CREATE TABLE password_resets(
@@ -15,14 +14,9 @@ export async function up(knex: Knex): Promise<void> {
         FOREIGN KEY (user_id)
         REFERENCES users(id)
         );
-    CREATE INDEX idx_password_resets_user_id ON password_resets(user_id);
-
-        ALTER TABLE password_resets ALTER COLUMN consumed_at DROP NOT NULL;
         `)
 }
-
 
 export async function down(knex: Knex): Promise<void> {
     await knex.raw(`DROP TABLE password_resets`)
 }
-

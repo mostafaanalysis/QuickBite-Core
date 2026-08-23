@@ -4,5 +4,10 @@ import {branchController} from "./controller/branch.controller";
 
 export const branchRouter = Router();
 
-branchRouter.get('/branches/nearby', branchController.findNearby)
-branchRouter.post('/restaurants/:restaurantId/branches',authenticate, branchController.create)
+branchRouter.get('/branches/nearby', branchController.findNearby);
+
+branchRouter.post('/restaurants/:restaurantId/branches',authenticate,branchController.create);
+
+branchRouter.get('/restaurants/:restaurantId/branches',branchController.branchesOfRestaurant);
+
+branchRouter.post('/restaurants/branches/:id',authenticate,branchController.updateBranch);

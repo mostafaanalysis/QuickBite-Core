@@ -27,6 +27,7 @@ export class AuthService {
         
     }
     const hashPasswordh  = await hashPassword(data.password);
+    
     const now = new Date();
     const trx = await db.transaction();
     let user;

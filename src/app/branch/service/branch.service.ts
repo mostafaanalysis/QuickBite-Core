@@ -1,8 +1,10 @@
 import { UnAuthorisedError } from "../../../common/auth/errors";
+import { BranchNotFoundError, BranchUpdateFailedError, notAuthorized, RestaurantNotFoundError } from "../../restaurants/errors";
 import { findRestaurantById } from "../../restaurants/repo/restaurants.repo";
+import { restaurantsService } from "../../restaurants/service/rest.service";
 import {system_role_ent} from "../../user/enums";
-import {CreateBranchDTO} from "../dto/branch.dto";
-import {findNearbyBranches, createBranch} from "../repository/branch.repository";
+import {CreateBranchDTO, UpdateBranchDTO} from "../dto/branch.dto";
+import {findNearbyBranches, createBranch, branchesOfRestaurant, getBranchById, updateBranch} from "../repository/branch.repository";
 
 export class BranchService {
 
@@ -13,9 +15,10 @@ export class BranchService {
 
     create = async (restaurantId: number, userId: number, userRole: system_role_ent, data: CreateBranchDTO) => {
         const restaurant = await findRestaurantById(restaurantId);
-
-        // if the logged in user is nto system admin and not the owner of restaurant then throw unauthorised err
-        if(userRole != system_role_ent.SYSTEM_ADMIN && (Number(restaurant.ownerId) !== Number(userId)) ){
+        if (!restaurant) {
+    throw RestaurantNotFoundError;
+}
+        if(userRole !== system_role_ent.SYSTEM_ADMIN && (Number(restaurant.ownerId) !== Number(userId)) ){
             throw UnAuthorisedError
         }
 
@@ -39,6 +42,27 @@ export class BranchService {
         });
 
         return branch;
+    }
+    branchesOfRestaurant = async (restaurantId:number)=>{
+    const row = await branchesOfRestaurant(restaurantId);
+    return row;
+    }
+    updateBranch = async (data:UpdateBranchDTO,userId:number,branchId:number,role:string)=>{
+        const dataOfBranch = await getBranchById(branchId);
+if (!dataOfBranch) {
+    throw BranchNotFoundError;
+}
+
+    const dataOfRestaurant = await restaurantsService.getRestaurantById(dataOfBranch.restaurantId);
+
+    if(Number(dataOfRestaurant.ownerId) !== Number(userId) && role !==system_role_ent.SYSTEM_ADMIN){
+        throw notAuthorized
+    }
+    const result = await updateBranch(branchId,data);
+if (!result) {
+    throw BranchUpdateFailedError;
+}
+return result;
     }
 }
 
