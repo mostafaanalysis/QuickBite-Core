@@ -11,3 +11,5 @@ branchRouter.post('/restaurants/:restaurantId/branches',authenticate,branchContr
 branchRouter.get('/restaurants/:restaurantId/branches',branchController.branchesOfRestaurant);
 
 branchRouter.post('/restaurants/branches/:id',authenticate,branchController.updateBranch);
+
+branchRouter.patch("/branches/:id/status",authenticate,branchController.updateBranchStatus);

@@ -3,7 +3,7 @@ declare namespace Express{
         correlationId?:string;
         user?:{
             userId:number;
-            role:string;
+            role:system_role_ent;
             email:string;
         }
     }

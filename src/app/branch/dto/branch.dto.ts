@@ -73,3 +73,14 @@ export class UpdateBranchDTO {
     @IsBoolean()
     acceptOrders?: boolean;
 }
+
+
+export class UpdateBranchStatusDTO {
+
+    @IsBoolean()
+    isActive!: boolean;
+
+    @IsInt()
+    @Min(0)
+    commission!: number;
+}

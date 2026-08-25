@@ -114,14 +114,6 @@ updateRestaurantStatus = async (req: Request,res: Response,next: NextFunction) =
         next(err)
     }
 }
-updateBranch = async (req: Request,res: Response,next: NextFunction) =>{
-    try{
-    
-    }
-    catch(err){
-        next(err);
-    }
-}
 }
 
 

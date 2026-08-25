@@ -3,8 +3,8 @@ import { BranchNotFoundError, BranchUpdateFailedError, notAuthorized, Restaurant
 import { findRestaurantById } from "../../restaurants/repo/restaurants.repo";
 import { restaurantsService } from "../../restaurants/service/rest.service";
 import {system_role_ent} from "../../user/enums";
-import {CreateBranchDTO, UpdateBranchDTO} from "../dto/branch.dto";
-import {findNearbyBranches, createBranch, branchesOfRestaurant, getBranchById, updateBranch} from "../repository/branch.repository";
+import {CreateBranchDTO, UpdateBranchDTO, UpdateBranchStatusDTO} from "../dto/branch.dto";
+import {findNearbyBranches, createBranch, branchesOfRestaurant, getBranchById, updateBranch, updateBranchStatus} from "../repository/branch.repository";
 
 export class BranchService {
 
@@ -64,6 +64,20 @@ if (!result) {
 }
 return result;
     }
+    updateBranchStatus = async (branchId: number,userRole: string,data: UpdateBranchStatusDTO) => {
+
+    if (userRole !== system_role_ent.SYSTEM_ADMIN) {
+        throw UnAuthorisedError;
+    }
+
+    const branch = await updateBranchStatus(branchId, data);
+
+    if (!branch) {
+        throw BranchNotFoundError;
+    }
+
+    return branch;
+};
 }
 
 export const branchService = new BranchService();

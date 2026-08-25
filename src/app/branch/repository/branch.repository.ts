@@ -1,7 +1,7 @@
 import {Knex} from "knex";
 import {db} from "../../../common/knex/knex";
 import { Branch } from "../entity/branch.entity";
-import { UpdateBranchDTO } from "../dto/branch.dto";
+import { UpdateBranchDTO, UpdateBranchStatusDTO } from "../dto/branch.dto";
 
 const BRANCH_COLUMNS = ['id','restaurant_id','country_code','address_text','label','lat','lng',
     'is_active','opens_at','closes_at','accept_orders','created_at','updated_at',
@@ -111,3 +111,18 @@ const [row] = await db("restaurants_branches")
 
     return row ? toEntity(row) : undefined;
 }
+
+export async function updateBranchStatus(branchId: number,data: UpdateBranchStatusDTO) {
+    const [row] = await db("restaurants_branches")
+        .where("id", branchId)
+        .update({
+            is_active: data.isActive,
+            commission: data.commission,
+            updated_at: new Date(),
+        })
+        .returning("*");
+
+    return row ? toEntity(row) : undefined;
+}
+
+
