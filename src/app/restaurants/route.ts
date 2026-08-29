@@ -14,3 +14,4 @@ restaurantRouter.post('/',authenticate,restaurantController.createRestaurantByAd
 restaurantRouter.patch('/:id',authenticate,restaurantController.updateRestaurant);
 
 restaurantRouter.patch('/:id/status',authenticate,restaurantController.updateRestaurantStatus);
+
